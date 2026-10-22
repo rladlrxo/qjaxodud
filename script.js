@@ -167,7 +167,7 @@
   const NEWNAME = { camera:'카메라', photos:'사진', navermap:'네이버지도', safari:'Safari', youtube:'YouTube', gemini:'Gemini', papago:'Papago', calc:'계산기', notes:'메모', mahjong:'작혼: 리치 마작', ournote:'아워 노트', uma:'우마무스메', starrail:'붕괴: 스타레일', roblox:'Roblox', pjsk:'프로세카', pogo:'Pokémon GO', minecraft:'Minecraft', blast:'Block Blast!', spotify:'Spotify' };
   NEWIC.forEach(id => { ICONS[id] = { name: NEWNAME[id], bg: '#000', html: () => '' }; });
   const IMG_ICONS = ['messages', 'music', 'notes', 'settings', 'clock', 'safari', 'camera', 'facetime', 'weather', 'maps', 'photos', 'coupang', 'youtube', 'appstore', 'kakao', 'instagram', 'netflix', 'phone'];
-  const ACTIVE = { phone: openPhone, safari: openSafari, messages: openMessages, spotify: openSpotify, photos: openPhotos, notes: openNotes, kakao: openKakao };
+  const ACTIVE = { gemini: openGemini, phone: openPhone, safari: openSafari, messages: openMessages, spotify: openSpotify, photos: openPhotos, notes: openNotes, kakao: openKakao };
   const CLOUD_SVG = '<svg viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17.5 18"/><path d="M12 11v8m-3-3l3 3 3-3"/></svg>';
 
   function iconBtn(key, showLabel) {
@@ -427,9 +427,37 @@ const GAME = [1, 2, 3].map(n => `<img class="gimgc" src="images/game${n}.png" al
     const m = D.spotify;
     appView({ cls: 'spotapp', hideNav: true, body: `
       <div class="sph"><button class="nbtn" id="spbk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button></div>
-      <div class="mplayer sp"><iframe src="${esc(m.embed)}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
-      <a class="mopen" href="${esc(m.url)}" target="_blank" rel="noopener">Spotify에서 열기 ›</a>` });
+      <div class="mplayer sp"><iframe src="${esc(m.embed)}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></div>
+      <a class="mopen" href="${esc(m.url)}" target="_blank" rel="noopener">플레이리스트 전체 보기 ›</a>` });
     $('#spbk').onclick = home;
+  }
+
+  /* ---------- Gemini ---------- */
+  const GI = {
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 6.5l3 3"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+    mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>',
+    wave: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="9" width="2.4" height="6" rx="1.2"/><rect x="10.8" y="5" width="2.4" height="14" rx="1.2"/><rect x="17.6" y="9" width="2.4" height="6" rx="1.2"/></svg>'
+  };
+  function gemLine(l) {
+    const bold = x => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+    if (l.startsWith('## ')) return `<h3>${bold(l.slice(3))}</h3>`;
+    return `<p>${bold(l)}</p>`;
+  }
+  function openGemini() {
+    const g = D.gemini || {};
+    const v = appView({ cls: 'gem', hideNav: true, white: true, body: `
+      <div class="ghead"><button class="gbtn" id="gbk">${GI.menu}</button>
+        <span class="gttl">Gemini <em>${esc(g.mode || '')}</em> <i>${GI.chev}</i></span>
+        <span class="gright"><span class="gbtn">${GI.edit}</span><span class="gbtn plain">${GI.dots}</span></span></div>
+      <div class="gask" id="gask"><div class="gasktx">${esc(g.prompt || '')}</div><button class="gexp" id="gexp">${GI.chev}</button></div>
+      <div class="gans">${(g.answer || []).map(gemLine).join('')}</div>`,
+      footer: `<div class="gbar"><span class="gplus">+</span><span class="gfield">Gemini에게 물어보…</span><span class="gmic">${GI.mic}</span><span class="gwave">${GI.wave}</span></div>` });
+    v.querySelector('#gbk').onclick = home;
+    const ask = v.querySelector('#gask');
+    v.querySelector('#gexp').onclick = () => ask.classList.toggle('open');
   }
 
   /* ---------- 카카오톡 ---------- */
