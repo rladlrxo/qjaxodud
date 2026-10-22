@@ -446,3 +446,25 @@ html, body { overflow: hidden; }
 .gmic { width: 1.5em; height: 1.5em; color: #3c3c43; } .gmic svg { width: 100%; height: 100%; }
 .gwave { width: 2.4em; height: 2.4em; border-radius: 50%; background: #d7e6fb; color: #3b7ddd; display: grid; place-items: center; flex-shrink: 0; }
 .gwave svg { width: 1.2em; height: 1.2em; }
+
+/* ===== 홈/폴더 배치: 실제 아이폰 비율(화면 너비 기준)로 고정 ===== */
+.home { display: flex; flex-direction: column; padding: 22.4% 0 0; }
+.wrow { position: static; top: auto; left: auto; right: auto;
+  display: grid; grid-template-columns: 1fr 1fr; column-gap: 5.75%; margin: 0 6.7%; padding: 0; font-size: .8em; }
+.wcol { gap: 0; }
+.widget { width: 100%; aspect-ratio: 1; border-radius: 17%; }
+.wcol em { margin-top: .55em; line-height: 1.1; }
+.frow { position: static; top: auto; left: auto; right: auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); margin: 3.6% 4.1% 0; padding: 0; gap: 0; }
+.fbtn { width: 100%; }
+.fold { width: 69.3%; height: auto; aspect-ratio: 1; margin: 0 auto; border-radius: 22.4%; padding: 8%; gap: calc(var(--u,16px) * .17); }
+.fbtn .lbl { margin-top: .42em; }
+
+.fopen { display: flex; flex-direction: column; padding: 51.6% 12.05% 0; }
+.ftitle { position: static; left: auto; top: auto; font-size: 2.1em; line-height: 1.15; flex: none; }
+.fbox { position: static; left: auto; right: auto; top: auto;
+  margin-top: 4.5%; padding: 9.2% 4.5% 5.5%; border-radius: 13%; row-gap: calc(var(--u,16px) * 1.23); column-gap: 0; flex: none; }
+.fbox .appbtn { font-size: .78em; width: 100%; }
+.fbox .ico { font-size: 1em; width: 69.1%; height: auto; aspect-ratio: 1; }
+.spot .stt { right: 3.4em; }
+.spot .stt b { font-size: .95em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

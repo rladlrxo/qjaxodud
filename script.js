@@ -344,20 +344,18 @@ const GAME = [1, 2, 3].map(n => `<img class="gimgc" src="images/game${n}.png" al
     state = 'app';
     const v = render(`
       <div class="app safari" style="position:absolute;inset:0">
-        <div class="sf-page" id="sfpage">즐겨찾기가 없습니다</div>
-        <div id="sfsugg" style="display:none;flex:1;overflow-y:auto;padding-top:.6em"></div>
+        <div id="sfsugg" style="flex:1;overflow-y:auto;padding-top:.6em"></div>
         <div class="sf-bar"><input class="sf-field" id="sf" placeholder="검색 또는 웹사이트 이름 입력" autocomplete="off" spellcheck="false"></div>
       </div>`, '', { darkText: true });
-    const inp = v.querySelector('#sf'), sugg = v.querySelector('#sfsugg'), pg = v.querySelector('#sfpage');
+    const inp = v.querySelector('#sf'), sugg = v.querySelector('#sfsugg');
     const draw = () => {
       const q = inp.value.trim();
       const list = q ? recent.filter(s => s.includes(q)) : recent;
-      sugg.innerHTML = `<div class="sec">${q ? '검색어 제안' : '최근 검색'}</div><div class="sf-sugg">${list.map(s => `<div class="crow" data-s="${esc(s)}"><span>🔍</span>${esc(s)}</div>`).join('') || '<div class="crow"><span>🔍</span>' + esc(q) + '</div>'}</div>`;
+      sugg.innerHTML = `<div class="sec">${q ? '검색어 제안' : '최근 검색'}</div><div class="sf-sugg">${list.map(s => `<div class="crow" data-s="${esc(s)}"><span>&#128269;</span>${esc(s)}</div>`).join('') || '<div class="crow"><span>&#128269;</span>' + esc(q) + '</div>'}</div>`;
     };
-    inp.onfocus = () => { pg.style.display = 'none'; sugg.style.display = 'block'; draw(); };
+    draw();
     inp.oninput = draw;
     sugg.onclick = e => { const r = e.target.closest('[data-s]'); if (r) { inp.value = r.dataset.s; draw(); } };
-    v.onclick = e => { if (e.target === v.firstElementChild || e.target === pg) { inp.blur(); sugg.style.display = 'none'; pg.style.display = 'flex'; } };
   }
 
   /* ---------- 사진 ---------- */
