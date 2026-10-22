@@ -317,7 +317,7 @@
     const rows = D.threads.map((t, i) => `
       <div class="mrow" data-i="${i}"><div class="avatar def">${DEF_AV}</div><div class="mm">
         <div class="mn"><span>${esc(t.name)}</span><span>${fmtRel(t.h)}</span></div>
-        <div class="pv">${esc(t.messages[t.messages.length - 1].text.replace(/\n/g, ' '))}</div></div></div>`).join('');
+        <div class="pv">${esc(((t.messages.filter(m => m.text).pop() || {}).text || '').replace(/\n/g, ' '))}</div></div></div>`).join('');
     const v = appView({ act: '편집', large: '메시지', body: `<div class="pins">${pins}</div><div style="background:#fff;border-radius:1em 1em 0 0">${rows}</div>` });
     v.querySelector('#abody').onclick = e => {
       const p = e.target.closest('.pin');
@@ -328,7 +328,7 @@
   }
 const GAME = [1, 2, 3].map(n => `<img class="gimgc" src="images/game${n}.png" alt="">`).join('') + '<div class="sent">전송됨</div>';
   function openThread(name, msgs, h, initial, avatar) {
-    const stamp = h != null ? `<div class="stamp">${fmtStamp(h)}</div>` : '';
+    const stamp = (h != null && !msgs.some(m => m.stamp)) ? `<div class="stamp">${fmtStamp(h)}</div>` : '';
     const bubbles = msgs.map(m => m.stamp ? `<div class="stamp">${esc(m.stamp)}</div>` : m.game ? GAME : `<div class="bub ${m.from === 'me' ? 'me' : 'them'}">${esc(m.text)}</div>`).join('');
     const v = appView({
       back: openMessages, backLabel: '', cls: '', white: true,
@@ -448,7 +448,7 @@ const GAME = [1, 2, 3].map(n => `<img class="gimgc" src="images/game${n}.png" al
   function openKakao() {
     const ks = D.kakao, unreadSum = D.kakaoUnread != null ? D.kakaoUnread : ks.reduce((s, k) => s + (k.unread || 0), 0);
     const rows = ks.map((k, i) => {
-      const last = (k.messages && k.messages.length) ? k.messages[k.messages.length - 1] : null;
+      const last = k.messages ? k.messages.filter(m => m.text || m.img).pop() : null;
       const pv = k.preview || (last ? (last.img ? '이모티콘을 보냈습니다.' : last.text) : '');
       return `<div class="krow ${k.open ? 'open' : ''}" data-i="${i}">
         <div class="kav" style="background-image:url('${esc(k.avatar || '')}')"></div>
@@ -468,12 +468,13 @@ const GAME = [1, 2, 3].map(n => `<img class="gimgc" src="images/game${n}.png" al
   }
   function openKakaoChat(i) {
     const k = D.kakao[i], msgs = k.messages || [];
-    const t = new Date();
-    let html = `<div class="kdate"><span>${t.getFullYear()}년 ${t.getMonth() + 1}월 ${t.getDate()}일 ${DAYS[t.getDay()]}요일</span></div>`;
+    const dayLine = n => { const d = new Date(Date.now() - n * 864e5); return `<div class="kdate"><span>${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일</span></div>`; };
+    let html = msgs.some(m => m.day != null) ? '' : dayLine(0);
     msgs.forEach((m, n) => {
+      if (m.day != null) { html += dayLine(m.day); return; }
       const me = m.from === 'me', prev = msgs[n - 1], next = msgs[n + 1];
-      const first = !prev || prev.from !== m.from || prev.time !== m.time;
-      const lastOfGroup = !next || next.from !== m.from || next.time !== m.time;
+      const first = !prev || prev.day != null || prev.from !== m.from || prev.time !== m.time;
+      const lastOfGroup = !next || next.day != null || next.from !== m.from || next.time !== m.time;
       const body = m.img ? `<img class="kemo" src="${esc(m.img)}" alt="">` : `<div class="kbub">${esc(m.text)}</div>`;
       const time = lastOfGroup ? `<span class="ktm">${esc(m.time || '')}</span>` : '';
       if (me) html += `<div class="kmsg me ${first ? 'first' : ''}">${time}${body}</div>`;
